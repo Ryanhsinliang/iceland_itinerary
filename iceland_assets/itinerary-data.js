@@ -703,7 +703,8 @@ const ICELAND_ITINERARY = {
       address: "Rauðarárstígur 31, 105 Reykjavík",
       specs: "4 房 2 衛・專屬免費停車位",
       features: ["專屬免費停車", "步行至主街", "完善廚房設備", "乾洗滌設施"],
-      desc: "抵達冰島首晚入住，位於市區寧靜街區，附設難能可貴的專屬免費停車位，步行即可抵達購物主街與哈爾格林姆教堂。"
+      desc: "抵達冰島首晚入住，位於市區寧靜街區，附設難能可貴的專屬免費停車位，步行即可抵達購物主街與哈爾格林姆教堂。",
+      link: "https://www.booking.com/hotel/is/downtown-rekjavik-apartment.zh-tw.html?aid=964694&checkin=2027-01-22&checkout=2027-01-23&dest_id=-2651804&dest_type=city&group_adults=7&group_children=0&label=hotel_details-QRmFPh%401784279093-Share-kpyT8a%401788742537-Share-P1ZS45S%401788747225&no_rooms=1&req_adults=7&req_children=0"
     },
     {
       nights: "1/23 – 1/24（連住 2 晚）",
@@ -712,7 +713,8 @@ const ICELAND_ITINERARY = {
       address: "Grímsstaðir, Reykholt",
       specs: "5 房 2 衛・BBQ 設備・免費停車",
       features: ["連住 2 晚免搬遷", "開闊戶外露台", "完全無光害", "BBQ 燒烤設備"],
-      desc: "位於西部銀圈核心鄉野，座落於無光害的大自然之中，大露台是守候極光與滿天銀河的絕佳舞台；5 房配置讓 7 人享有充裕舒適睡眠空間。"
+      desc: "位於西部銀圈核心鄉野，座落於無光害的大自然之中，大露台是守候極光與滿天銀河的絕佳舞台；5 房配置讓 7 人享有充裕舒適睡眠空間。",
+      link: "https://www.booking.com/hotel/is/grimsstadir-guesthose-family-friendly.zh-tw.html?aid=964694&checkin=2027-01-23&checkout=2027-01-25&dest_id=-2646442&dest_type=city&group_adults=7&group_children=0&label=hotel_details-QRmFPh%401784279093-Share-kpyT8a%401788742537&no_rooms=1&req_adults=7&req_children=0"
     },
     {
       nights: "1/25 – 1/26（連住 2 晚）",
@@ -721,7 +723,8 @@ const ICELAND_ITINERARY = {
       address: "Grundargata 43, Grundarfjörður",
       specs: "3 房 2 衛・2 台洗衣機 ＋ 2 台烘衣機・正對草帽山",
       features: ["窗景正對草帽山", "2 洗 2 烘強大洗衣", "連住 2 晚", "小鎮中心好停車"],
-      desc: "整趟旅程的最強補給與後勤中樞！客廳與臥房窗景正對草帽山（Kirkjufell），室內更罕見配備 2 台洗衣機與 2 台烘衣機，旅程中段洗烘所有衣物。"
+      desc: "整趟旅程的最強補給與後勤中樞！客廳與臥房窗景正對草帽山（Kirkjufell），室內更罕見配備 2 台洗衣機與 2 台烘衣機，旅程中段洗烘所有衣物。",
+      link: "https://www.booking.com/hotel/is/two-bathrooms-beds-for-9-pers-great-view.zh-tw.html?aid=964694&checkin=2027-01-25&checkout=2027-01-27&group_adults=7&group_children=0&label=hotel_details-ERhNq9%401784298129-Share-gID6HUH%401788752664&no_rooms=1"
     },
     {
       nights: "1/27 – 1/28（連住 2 晚）",
@@ -730,7 +733,8 @@ const ICELAND_ITINERARY = {
       address: "Veiðilundur, Selfoss 湖畔",
       specs: "2024 新建・私人戶外地熱 Hot Tub・室內獨立桑拿 (Sauna)",
       features: ["私人地熱 Hot Tub", "室內專屬桑拿房", "湖畔清幽", "連住 2 晚黃金圈中心"],
-      desc: "2024 年全新完工的高級渡假木屋，擁有私人專屬戶外滾燙熱水池與乾蒸桑拿烤箱，長途駕駛後泡湯仰望星空與極光，堪稱整趟旅程最高享受之一。"
+      desc: "2024 年全新完工的高級渡假木屋，擁有私人專屬戶外滾燙熱水池與乾蒸桑拿烤箱，長途駕駛後泡湯仰望星空與極光，堪稱整趟旅程最高享受之一。",
+      link: "https://www.booking.com/hotel/is/hot-tub-sauna-lake-view-2024-built-cabin.zh-tw.html?aid=964694&checkin=2027-01-27&checkout=2027-01-29&dest_id=900054849&dest_type=city&group_adults=7&group_children=0&label=room_list-KrEdQUf%401784298227-Share-gUSpxw%401788763230-Share-JPVz7c%401789367251&no_rooms=1&req_adults=7&req_children=0"
     },
     {
       nights: "1/29（第 8 晚）",
@@ -739,7 +743,8 @@ const ICELAND_ITINERARY = {
       address: "教堂鎮以西開闊山坡",
       specs: "獨棟景觀小木屋・簡易廚房・無烤箱",
       features: ["高地絕佳視野", "無遮蔽極光展望", "進入冰河湖前哨", "安靜溫馨"],
-      desc: "座落於高地開闊山坡，視野居高臨下，為進入東南部冰河湖區域的最重要前哨休憩站，今夜最適合煮鍋熱騰騰的湯麵或火鍋溫暖身心。"
+      desc: "座落於高地開闊山坡，視野居高臨下，為進入東南部冰河湖區域的最重要前哨休憩站，今夜最適合煮鍋熱騰騰的湯麵或火鍋溫暖身心。",
+      link: "https://www.booking.com/hotel/is/the-holiday-houses-kirkjubaejarklaustur.zh-tw.html?aid=964694&checkin=2027-01-29&checkout=2027-01-30&group_adults=7&group_children=0&label=hotel_details-OAaIATP%401784298597-Share-DkgjF8%401788770467-Share-48JJVT%401789354570&no_rooms=1"
     },
     {
       nights: "1/30 – 1/31（連住 2 晚）",
@@ -748,7 +753,8 @@ const ICELAND_ITINERARY = {
       address: "Svínafell 1, Skaftafell",
       specs: "現代化高質感公寓・連住 2 晚・距冰川集合點 10 分鐘",
       features: ["距冰川集合點極近", "連住 2 晚免搬家", "完善自炊廚房", "高質感北歐設計"],
-      desc: "緊鄰瓦特納冰川國家公園入口與 Svínafell 冰舌，距離隔日冰川健行與藍冰洞集合點僅約 10–15 分鐘車程，免去連日搬遷行李，活動後快速返屋熱水澡。"
+      desc: "緊鄰瓦特納冰川國家公園入口與 Svínafell 冰舌，距離隔日冰川健行與藍冰洞集合點僅約 10–15 分鐘車程，免去連日搬遷行李，活動後快速返屋熱水澡。",
+      link: "https://www.booking.com/hotel/is/the-potato-storage-holiday-apartments.zh-tw.html?aid=964694&checkin=2027-01-30&checkout=2027-02-01&group_adults=7&group_children=0&label=hotel_details-OAaIATP%401784298597-Share-DkgjF8%401788770467-Share-3K4rj4t%401789355137&no_rooms=1"
     },
     {
       nights: "2/1（第 11 晚）",
@@ -757,7 +763,8 @@ const ICELAND_ITINERARY = {
       address: "5 Þrúðvangur, Hella",
       specs: "水岸景觀住宅・75 吋大螢幕電視 ＋ 環繞音響",
       features: ["75 吋巨幕劇院音響", "舒適沙發客廳", "長途折返最佳中繼", "鄰近河畔視野開闊"],
-      desc: "自東南海岸長途折返南岸後的最佳身心療癒地，配備 75 吋大電視與頂級環繞音響，今晚全員可齊聚在客廳沙發一同觀賞精彩電影，回味滿滿冒險回憶。"
+      desc: "自東南海岸長途折返南岸後的最佳身心療癒地，配備 75 吋大電視與頂級環繞音響，今晚全員可齊聚在客廳沙發一同觀賞精彩電影，回味滿滿冒險回憶。",
+      link: "https://www.booking.com/hotel/is/hella-riverbank.zh-tw.html?aid=304142&checkin=2027-02-01&checkout=2027-02-02&dest_id=-2646179&dest_type=city&group_adults=7&group_children=0&label=gen173nr-10CAEoggI46AdIM1gEaOcBiAECmAEzuAEJyAER2AED6AEB-AEBiAIBqAIBuALT_ejSBsACAdICJGZkOTM5N2Y4LWFjNGQtNDNmNi1iM2Q1LTE3N2M5ODUzZDBjOdgCAeACAQ-z9NSZ8%401784299288-Share-FpDI5eo%401788771096-Share-KgKVE8%401788829057-Share-RACqbI%401789356773-Share-H9Sd4u%401789373250&no_rooms=1&req_adults=7&req_children=0"
     },
     {
       nights: "2/2（第 12 晚）",
@@ -766,7 +773,8 @@ const ICELAND_ITINERARY = {
       address: "Blikavöllur 2, Keflavík Airport",
       specs: "機場園區飯店・步行 2–5 分鐘直達航廈・04:00 起供應早餐",
       features: ["步行 2-5 分鐘到航廈", "04:00 起供應熱早餐", "車已加滿油歸還", "出境零趕路壓力"],
-      desc: "座落於機場園區內，今晚先將車輛加滿油歸還 Lotus 車行，入住後安心整理行李；明晨 04:00 即可享用豐盛熱早餐，從容步行 3 分鐘直接進入航廈報到！"
+      desc: "座落於機場園區內，今晚先將車輛加滿油歸還 Lotus 車行，入住後安心整理行李；明晨 04:00 即可享用豐盛熱早餐，從容步行 3 分鐘直接進入航廈報到！",
+      link: "https://www.booking.com/hotel/is/airport-sma-ri.zh-tw.html?aid=304142&checkin=2027-02-02&checkout=2027-02-03&dest_id=338&dest_type=airport&group_adults=7&group_children=0&label=gen173nr-10CAEoggI46AdIM1gEaOcBiAECmAEzuAEJyAER2AED6AEB-AEBiAIBqAIBuALT_ejSBsACAdICJGZkOTM5N2Y4LWFjNGQtNDNmNi1iM2Q1LTE3N2M5ODUzZDBjOdgCAeACAQ-z9NSZ8%401784299288-Share-FpDI5eo%401788771096-Share-KgKVE8%401788829057-Share-RACqbI%401789356773-Share-p21hTy%401789357112&no_rooms=1&req_adults=7&req_children=0"
     }
   ],
 

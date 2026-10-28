@@ -208,6 +208,12 @@ function renderDetailedCards(days) {
     // 標籤 Pills
     const tagsHtml = (day.tags || []).map(t => `<span class="meta-pill">#${t}</span>`).join("");
 
+    // 住宿連結（若 day.accommodation 內無 link，自動從全域 accommodations 比對 name 補齊）
+    const accObj = (window.ICELAND_ITINERARY && window.ICELAND_ITINERARY.accommodations)
+      ? window.ICELAND_ITINERARY.accommodations.find(a => a.name === day.accommodation.name)
+      : null;
+    const accLink = (day.accommodation && day.accommodation.link) || (accObj ? accObj.link : null);
+
     card.innerHTML = `
       <!-- 卡片頭部 -->
       <div class="day-header">
@@ -258,7 +264,9 @@ function renderDetailedCards(days) {
       <!-- 住宿模組 -->
       <div class="stay-box">
         <div class="stay-label">🏡 當夜精選住宿</div>
-        <div class="stay-name">${day.accommodation.name}</div>
+        <div class="stay-name">
+          ${accLink ? `<a href="${accLink}" target="_blank" rel="noopener noreferrer">${day.accommodation.name} ↗</a>` : day.accommodation.name}
+        </div>
         <div class="stay-details">
           📍 ${day.accommodation.address || day.accommodation.specs}
           ${day.accommodation.notes ? `・<span style="color:var(--text-main);font-weight:600;">${day.accommodation.notes}</span>` : ""}
@@ -339,7 +347,9 @@ function renderAccommodations(items) {
 
     card.innerHTML = `
       <div class="hotel-header">
-        <div class="hotel-name">${acc.name}</div>
+        <div class="hotel-name">
+          ${acc.link ? `<a href="${acc.link}" target="_blank" rel="noopener noreferrer">${acc.name} ↗</a>` : acc.name}
+        </div>
         <span class="hotel-stay-count">${acc.nights}</span>
       </div>
       <div class="hotel-meta">
@@ -441,14 +451,14 @@ function renderChecklistView(checklists) {
           <div class="category-title">📂 ${cat}</div>
           <div class="checklist-items-list">
             ${groups[cat].map(item => {
-              const checked = !!savedState[item.id];
-              return `
+        const checked = !!savedState[item.id];
+        return `
                 <label class="check-item ${checked ? 'completed' : ''}" data-id="${item.id}">
                   <input type="checkbox" ${checked ? 'checked' : ''} onchange="toggleChecklistItem('${item.id}', this.checked)">
                   <span class="custom-checkmark"></span>
                   <span class="check-text">${item.text}</span>
                 </label>`;
-            }).join("")}
+      }).join("")}
           </div>
         </div>`;
     }

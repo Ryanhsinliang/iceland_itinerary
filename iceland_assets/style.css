@@ -830,6 +830,22 @@ main.content-area {
   color: var(--text-main);
 }
 
+.stay-box .stay-name a,
+.hotel-name a {
+  color: var(--accent-cyan);
+  text-decoration: underline;
+  text-decoration-color: rgba(2, 132, 199, 0.4);
+  text-underline-offset: 3px;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.stay-box .stay-name a:hover,
+.hotel-name a:hover {
+  color: var(--accent-aurora);
+  text-decoration-color: var(--accent-aurora);
+}
+
 .stay-box .stay-details {
   font-size: 13.5px;
   color: var(--text-muted);

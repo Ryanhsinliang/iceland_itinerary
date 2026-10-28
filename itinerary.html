@@ -27,7 +27,7 @@
           <span>•</span>
           <span>⏱️ 共 13 天精彩自駕</span>
           <span>•</span>
-          <span>🚙 團隊自駕（約 9 人）</span>
+          <span>🚙 團隊自駕（7 人 · 兩台四驅 SUV：RAV4 ＋ Land Cruiser）</span>
         </div>
       </div>
 
@@ -46,7 +46,7 @@
       </div>
       <div class="stat-pill">
         <span class="label">預估總里程</span>
-        <span class="val">~1,840 km</span>
+        <span class="val">~1,975 km</span>
       </div>
       <div class="stat-pill">
         <span class="label">住宿切換</span>
@@ -104,7 +104,8 @@
       <button class="view-tab active" data-view="detailed" role="tab">📅 每日詳細行程</button>
       <button class="view-tab" data-view="overview" role="tab">📊 行程總覽對照表</button>
       <button class="view-tab" data-view="accommodations" role="tab">🏡 住宿與設施總覽</button>
-      <button class="view-tab" data-view="guide" role="tab">🎒 冬季自駕與安全須知</button>
+      <button class="view-tab" data-view="guide" role="tab">🚗 冬季自駕與安全守則</button>
+      <button class="view-tab" data-view="checklist" role="tab">🎒 行前準備與打勾清單</button>
     </div>
 
     <div class="search-and-actions">
@@ -141,9 +142,10 @@
               <tr>
                 <th>天數</th>
                 <th>日期</th>
-                <th>當日主題與區域</th>
+                <th>當日主題與路線</th>
                 <th>上午安排（出發～12:00）</th>
-                <th>下午安排（12:00～入住）</th>
+                <th>下午安排（12:00～回到住宿）</th>
+                <th>晚間安排（回到住宿～24:00）</th>
                 <th>夜宿地點與規格</th>
               </tr>
             </thead>
@@ -163,7 +165,7 @@
       <div style="margin-bottom:16px;">
         <h2 style="font-size:20px;font-weight:800;color:var(--text-main);">🏡 旅程 7 大精選渡假屋與飯店總覽</h2>
         <p style="font-size:14px;color:var(--text-muted);">
-          依旅程規劃連住設計（Reykholt 2 晚、Grundarfjörður 2 晚、Selfoss 2 晚、Skaftafell 2 晚），減少冬季搬遷行李負擔。
+          依旅程規劃連住設計（Reykholt 2 晚、Grundarfjörður 2 晚、Selfoss 2 晚、Skaftafell 2 晚），大幅減少冬季搬遷行李負擔。
         </p>
       </div>
       <div id="accommodations-container" class="accommodations-grid">
@@ -171,48 +173,29 @@
       </div>
     </section>
 
-    <!-- 視圖 D: 冬季自駕與安全須知 (Winter Guide & Checklist) -->
+    <!-- 視圖 D: 冬季自駕與安全守則 (Winter Driving & Safety Guide) -->
     <section id="view-guide" class="view-section">
-      <div class="guide-container">
-        
-        <div class="guide-card">
-          <h3>🚗 冰島冬季自駕黃金法則</h3>
-          <ul>
-            <li><strong>全天開啟大燈：</strong>冰島法律嚴格規定，不論白天黑夜、天晴或起霧，車輛行駛必須恆開車頭大燈。</li>
-            <li><strong>抓緊車門迎風停車：</strong>沿海或海崖（如 Dyrhólaey、Arnarstapi、黑沙灘）風速常高達 15–20 m/s，停車時車頭務必正對風向，開車門時必須雙手緊握把手，避免強風吹翻鉸鏈（保險通常不賠吹折車門）。</li>
-            <li><strong>警惕黑冰 (Black Ice)：</strong>橋面、背陰處或剛降雪路面常有看似柏油路卻極度光滑的「黑冰」，過彎切勿猛踩煞車或急打方向盤。</li>
-            <li><strong>停車繳費 App：</strong>雷克雅維克市區與各大景點（辛格韋德利、塞里雅蘭瀑布、羽毛峽谷等）均需以 <code>Parka</code> 或 <code>EasyPark</code> App 自行繳納停車費，未繳會產生高額租車罰款。</li>
-          </ul>
-        </div>
+      <div style="margin-bottom:16px;">
+        <h2 style="font-size:20px;font-weight:800;color:var(--text-main);">🚗 冰島冬季自駕、車輛配置與道路安全守則</h2>
+        <p style="font-size:14px;color:var(--text-muted);">
+          依據簡報第 51 至 59 頁專業自駕守則整理，涵蓋雙車特性、惡劣天候應變、防黑冰與避坑指南。
+        </p>
+      </div>
+      <div id="guide-rules-container">
+        <!-- 由 JavaScript 動態渲染雙車面板與核心法則 -->
+      </div>
+    </section>
 
-        <div class="guide-card">
-          <h3>🛒 食材採買與民生補給戰略</h3>
-          <ul>
-            <li><strong>Costco 批發量販：</strong>旅程第 1 天抵達後與第 6 天返途均會經過首都 Costco，務必一次買齊羊排、牛排、雞蛋、蔬菜與麵食乾糧。</li>
-            <li><strong>關鍵無超市路段：</strong>Day 8 自教堂鎮一路向東至冰河湖完全沒有大超市，僅有高價加油站小店，務必於 1/29 在 Selfoss 或 Vík 的 Krónan 超市買足 3 天存糧。</li>
-            <li><strong>酒精專賣店 Vínbúðin：</strong>冰島一般超市只販售酒精濃度低於 2.25% 的淡啤酒。想要紅酒、啤酒或烈酒只能到國營專賣店 Vínbúðin，平日常在 18:00 前打烊，週日通常不營業。</li>
-          </ul>
-        </div>
-
-        <div class="guide-card">
-          <h3>🎒 冬季隨身核心裝備清單</h3>
-          <ul>
-            <li><strong>簡易防滑冰爪 (Microspikes)：</strong>冬季各瀑布與峽谷步道均有厚冰，上下車隨身套上，防止嚴重滑倒受傷。</li>
-            <li><strong>三層穿衣法：</strong>底層羊毛排汗衣、中層保暖抓絨/羽絨衣、外層高透氣防風防水衝鋒衣褲（瀑布水霧極大）。</li>
-            <li><strong>配件：</strong>保暖毛帽（能蓋住耳朵）、防風防水保暖手套、保溫瓶（裝熱水暖身）、暖暖包與高筒防水健行鞋。</li>
-            <li><strong>電子用品：</strong>行動電源（低溫手機電池耗電極快，需貼身保暖）、車用充電器與手機架。</li>
-          </ul>
-        </div>
-
-        <div class="guide-card">
-          <h3>🌌 極光觀測與拍照小秘訣</h3>
-          <ul>
-            <li><strong>極光預報：</strong>每日傍晚查閱 <code>Vedur.is</code> 極光頁面，重點觀察【白色無雲區域 (Low/Mid/High Cloud Cover)】，Kp 指數 2–3 級只要天空晴朗無光害即可清楚看見。</li>
-            <li><strong>渡假屋優勢：</strong>本次行程選擇多間遠離城鎮光害的景觀木屋（Reykholt、Grundarfjörður、Selfoss、Skaftafell），在屋外露台或泡在 Hot Tub 即可守候極光。</li>
-            <li><strong>相機設定：</strong>腳架、手動對焦至無限遠、光圈開至最大 (f/1.4–f/2.8)、ISO 1600–3200、曝光 4–10 秒。</li>
-          </ul>
-        </div>
-
+    <!-- 視圖 E: 行前準備與打勾清單 (Interactive Preparation Checklist) -->
+    <section id="view-checklist" class="view-section">
+      <div style="margin-bottom:16px;">
+        <h2 style="font-size:20px;font-weight:800;color:var(--text-main);">🎒 行前必備物品、證件與裝備打勾清單</h2>
+        <p style="font-size:14px;color:var(--text-muted);">
+          依據簡報第 60 至 61 頁整理，包含證件、保險、App、三層穿衣與隨車自炊小物。點擊方框可記錄打包進度（自動儲存於本機）。
+        </p>
+      </div>
+      <div id="checklist-container">
+        <!-- 由 JavaScript 動態渲染互動式打勾清單 -->
       </div>
     </section>
 
@@ -249,10 +232,8 @@
   <!-- 7. 模組化資料與互動腳本引入 -->
   <!-- 結構化行程資料模組 (輕量優先載入，手機 0.01 秒秒開) -->
   <script src="iceland_assets/itinerary-data.js"></script>
-  <!-- 前端互動與渲染邏輯模組 (即時渲染所有行程文字、表格與導航) -->
+  <!-- 前端互動與渲染邏輯模組 (即時渲染所有行程文字、表格、打勾清單與導航) -->
   <script src="iceland_assets/app.js"></script>
-  <!-- 大型離線地圖截圖與景點相片模組 (900KB Base64 採背景 defer 延遲加載，徹底避免手機主線程卡死) -->
-  <script src="iceland_assets/maps-data.js" defer></script>
 
 </body>
 </html>

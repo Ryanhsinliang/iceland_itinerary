@@ -1,6 +1,6 @@
 /**
- * 冰島自助自駕旅遊 2027/1/22–2/3 - 前端核心互動邏輯模組
- * 負責渲染、視圖切換、即時搜尋、主題管理、IntersectionObserver 監聽與燈箱彈窗
+ * 冰島自助自駕旅遊 2027/1/22–2/3 - 前端核心互動與渲染邏輯模組
+ * 負責詳細行程、總覽對照表、住宿總覽、冬季自駕安全、互動打勾清單渲染與主題切換
  */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -22,7 +22,9 @@ function initApp() {
   renderStickyNav(data.days);
   renderDetailedCards(data.days);
   renderOverviewTable(data.days);
-  renderAccommodations(data.days);
+  renderAccommodations(data.accommodations || data.days);
+  renderWinterGuide(data);
+  renderChecklistView(data.checklists);
 
   // 3. 初始化互動監聽
   initViewSwitcher();
@@ -30,7 +32,6 @@ function initApp() {
   initScrollSpy();
   initExpandCollapseAll();
   initLightboxModal();
-  initLazyBase64Images();
   initBackToTop();
   initPrintHelper();
 }
@@ -74,7 +75,7 @@ function updateThemeIcon(theme) {
 }
 
 /**
- * 2. 吸頂日期列渲染 (Sticky Date Pills)
+ * 2. 吸頂日期列渲染 (Sticky Date Navigation)
  */
 function renderStickyNav(days) {
   const navContainer = document.getElementById("sticky-nav-container");
@@ -85,9 +86,8 @@ function renderStickyNav(days) {
     const btn = document.createElement("button");
     btn.className = `day-pill ${day.isFlightDay ? "fly" : ""}`;
     btn.dataset.day = day.dayNumber;
-    btn.innerHTML = `Day ${day.dayNumber} <span style="font-size:11px;opacity:0.8;">${day.date}</span>`;
+    btn.innerHTML = `Day ${day.dayNumber} <span style="font-size:11px;opacity:0.85;">${day.date}</span>`;
     btn.addEventListener("click", () => {
-      // 若非詳細行程視圖，自動切換至詳細行程
       switchView("detailed");
       scrollToDay(day.dayNumber);
     });
@@ -118,44 +118,64 @@ function renderDetailedCards(days) {
     card.dataset.dayNumber = day.dayNumber;
     card.dataset.region = day.region;
 
-    // 檢查是否有地圖與照片
-    const mapUrl = window.M ? window.M[day.dayNumber] : null;
-    const mapThumb = window.IMG ? window.IMG[day.dayNumber] : null;
+    // 地圖與縮圖
+    const mapUrl = day.mapUrl || (window.M ? window.M[day.dayNumber] : null);
+    const mapImg = day.mapImage || (window.IMG ? window.IMG[day.dayNumber] : null);
 
     // 景點列表 HTML
     let spotsHtml = "";
     if (day.spots && day.spots.length > 0) {
-      const spotItems = day.spots.map((spot, idx) => {
-        // Day 2 景點附帶照片（使用延遲載入與全域索引，避免 Base64 塞爆 DOM）
+      const spotItems = day.spots.map((spot) => {
+        // 照片 HTML
         let photoHtml = "";
-        if (day.dayNumber === 2 && ((window.SP && window.SP[idx]) || idx < 4)) {
+        const imgSrc = spot.image || (spot.imgSrc ? spot.imgSrc : null);
+        if (imgSrc) {
+          const safeName = (spot.name || "").replace(/'/g, "\\'");
           photoHtml = `
             <div class="spot-photo-wrapper">
-              <div class="spot-photo-thumb" onclick="openSpotLightbox(${idx}, '${spot.name.replace(/'/g, "\\'")}')" title="點擊檢視高解析大圖">
-                <img class="lazy-base64" data-sp-idx="${idx}" alt="${spot.name}" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 3'%3E%3C/svg%3E">
-                <span class="spot-photo-badge">🔍 點擊放大</span>
+              <div class="spot-photo-thumb" onclick="openLightbox('${imgSrc}', '${safeName}')" title="點擊檢視高解析大圖">
+                <img loading="lazy" src="${imgSrc}" alt="${spot.name}">
+                <span class="spot-photo-badge">🔍 點擊看大圖</span>
               </div>
             </div>`;
         }
 
-        if (spot.desc) {
-          return `
-            <div class="spot-item">
-              <details class="spot-accordion" open>
-                <summary>${spot.name}</summary>
-                <div class="spot-content-body ${photoHtml ? 'has-photo' : ''}">
-                  ${photoHtml}
-                  <div class="spot-desc">${spot.desc}</div>
-                </div>
-              </details>
+        // 結構化景點內容（由來、看點、提醒）
+        let contentHtml = "";
+        if (spot.origin || spot.highlights || spot.tips) {
+          contentHtml = `
+            <div class="spot-rich-desc">
+              ${spot.sub ? `<div class="spot-sub-title">📍 ${spot.sub}</div>` : ""}
+              ${spot.origin ? `
+                <div class="spot-block origin-block">
+                  <div class="block-label">🏛️ 由來典故</div>
+                  <div class="block-text">${spot.origin}</div>
+                </div>` : ""}
+              ${spot.highlights ? `
+                <div class="spot-block highlights-block">
+                  <div class="block-label">🔭 核心看點</div>
+                  <div class="block-text">${spot.highlights}</div>
+                </div>` : ""}
+              ${spot.tips ? `
+                <div class="spot-block tips-block">
+                  <div class="block-label">💡 參觀提醒與費用</div>
+                  <div class="block-text">${spot.tips}</div>
+                </div>` : ""}
             </div>`;
-        } else {
-          return `
-            <div class="spot-item">
-              <div style="font-weight:600;font-size:14.5px;">📍 ${spot.name}</div>
-              ${photoHtml ? `<div class="spot-content-body has-photo">${photoHtml}</div>` : ""}
-            </div>`;
+        } else if (spot.desc) {
+          contentHtml = `<div class="spot-desc">${spot.desc}</div>`;
         }
+
+        return `
+          <div class="spot-item">
+            <details class="spot-accordion" open>
+              <summary>${spot.name}</summary>
+              <div class="spot-content-body ${photoHtml ? 'has-photo' : ''}">
+                ${photoHtml}
+                ${contentHtml}
+              </div>
+            </details>
+          </div>`;
       }).join("");
 
       spotsHtml = `
@@ -167,22 +187,22 @@ function renderDetailedCards(days) {
         </div>`;
     }
 
-    // 地圖卡片 HTML（使用按需索引，杜絕數十萬字元 Base64 塞入 onclick）
+    // 地圖卡片 HTML
     let mapHtml = "";
     if (mapUrl) {
       mapHtml = `
-        <a class="map-route-card" href="${mapUrl}" target="_blank" rel="noopener noreferrer">
-          ${mapThumb ? `
-            <div class="map-preview-thumb" onclick="event.preventDefault(); openMapLightbox(${day.dayNumber})" title="點擊檢視放大路線圖">
-              <img class="lazy-base64" data-day="${day.dayNumber}" alt="路線預覽" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3C/svg%3E">
+        <div class="map-route-card">
+          ${mapImg ? `
+            <div class="map-preview-thumb" onclick="openLightbox('${mapImg}', 'Day ${day.dayNumber} 自駕行車路線地圖')" title="點擊檢視放大路線圖">
+              <img loading="lazy" src="${mapImg}" alt="Day ${day.dayNumber} 路線地圖">
               <span class="map-thumb-tag">🔍 路線圖</span>
             </div>` : ""}
           <div class="map-text">
             <div class="map-title">🗺️ Day ${day.dayNumber} Google Maps 導航路線</div>
-            <div class="map-sub">${day.driveInfo}・點擊開啟即時地圖規劃</div>
+            <div class="map-sub">${day.driveInfo}・點擊開啟即時地圖路徑規劃</div>
           </div>
-          <div class="map-cta">開啟路線 ↗</div>
-        </a>`;
+          <a class="map-cta" href="${mapUrl}" target="_blank" rel="noopener noreferrer">開啟路線 ↗</a>
+        </div>`;
     }
 
     // 標籤 Pills
@@ -219,15 +239,19 @@ function renderDetailedCards(days) {
       <!-- 自駕路線地圖卡片 (若有) -->
       ${mapHtml}
 
-      <!-- 上午與下午時間軸切塊 -->
-      <div class="timeline-grid">
+      <!-- 每日三段時間軸 (依 PPTX 總覽標準結構) -->
+      <div class="timeline-grid three-slots">
         <div class="timeline-slot">
           <div class="slot-title">🌅 出發 ～ 12:00（上午）</div>
           <div class="slot-content">${day.morningSchedule}</div>
         </div>
         <div class="timeline-slot">
-          <div class="slot-title">🌇 12:00 ～ 入住（下午）</div>
+          <div class="slot-title">🌇 12:00 ～ 回到住宿（下午）</div>
           <div class="slot-content">${day.afternoonSchedule}</div>
+        </div>
+        <div class="timeline-slot night-slot">
+          <div class="slot-title">🌌 回到住宿 ～ 24:00（晚間）</div>
+          <div class="slot-content">${day.nightSchedule || "自煮晚餐 ＋ 守候極光 ＋ 充足休息"}</div>
         </div>
       </div>
 
@@ -258,33 +282,37 @@ function renderDetailedCards(days) {
 }
 
 /**
- * 4. 行程總覽表格渲染 (Overview Table View)
+ * 4. 行程總覽對照表渲染 (Overview Table View)
  */
 function renderOverviewTable(days) {
   const tbody = document.getElementById("overview-tbody");
   if (!tbody) return;
 
   tbody.innerHTML = "";
-
   days.forEach((day) => {
     const tr = document.createElement("tr");
-    if (day.isFlightDay) tr.className = "flight-row";
+    if (day.isFlightDay) tr.className = "row-flight";
 
     tr.innerHTML = `
-      <td class="col-day">Day ${day.dayNumber}</td>
+      <td><span class="day-badge-small">Day ${day.dayNumber}</span></td>
       <td><strong>${day.date}</strong>（${day.weekday}）</td>
       <td>
-        <strong>${day.title}</strong>
-        <div style="font-size:12px;color:var(--text-subtle);margin-top:2px;">🚗 ${day.driveInfo}・${day.region}</div>
+        <div style="font-weight:700;color:var(--text-main);">${day.title}</div>
+        <div style="font-size:12px;color:var(--text-subtle);margin-top:2px;">
+          📍 ${day.region}・🚗 ${day.driveInfo}
+        </div>
       </td>
       <td>${day.morningSchedule}</td>
       <td>${day.afternoonSchedule}</td>
+      <td>${day.nightSchedule || "晚餐＋等極光＋休息"}</td>
       <td>
         <strong>${day.accommodation.name}</strong>
-        <div style="font-size:12px;color:var(--text-subtle);">${day.accommodation.specs || ""}</div>
+        <div style="font-size:12px;color:var(--text-muted);">${day.accommodation.specs}</div>
       </td>
     `;
 
+    // 點擊整行跳轉至對應日詳細卡片
+    tr.style.cursor = "pointer";
     tr.addEventListener("click", () => {
       switchView("detailed");
       scrollToDay(day.dayNumber);
@@ -295,46 +323,37 @@ function renderOverviewTable(days) {
 }
 
 /**
- * 5. 住宿清單渲染 (Accommodations View)
+ * 5. 住宿清單模組渲染 (Accommodations View)
  */
-function renderAccommodations(days) {
+function renderAccommodations(items) {
   const container = document.getElementById("accommodations-container");
   if (!container) return;
 
   container.innerHTML = "";
 
-  // 依住宿名稱去重但保留入住天數
-  const stayMap = new Map();
-
-  days.forEach((day) => {
-    const acc = day.accommodation;
-    if (!stayMap.has(acc.name)) {
-      stayMap.set(acc.name, {
-        name: acc.name,
-        address: acc.address || "",
-        specs: acc.specs || "",
-        notes: acc.notes || "",
-        days: [`Day ${day.dayNumber} (${day.date})`]
-      });
-    } else {
-      stayMap.get(acc.name).days.push(`Day ${day.dayNumber} (${day.date})`);
-    }
-  });
-
-  stayMap.forEach((stay) => {
+  items.forEach((acc) => {
     const card = document.createElement("div");
-    card.className = "acc-card";
+    card.className = "hotel-card";
+
+    const featuresHtml = (acc.features || []).map(f => `<span class="hotel-feature-tag">✓ ${f}</span>`).join("");
 
     card.innerHTML = `
-      <div class="acc-card-header">
-        <span class="acc-day-badge">${stay.days.join("、")}</span>
+      <div class="hotel-header">
+        <div class="hotel-name">${acc.name}</div>
+        <span class="hotel-stay-count">${acc.nights}</span>
       </div>
-      <h3 class="acc-name">${stay.name}</h3>
-      <div class="acc-address">📍 ${stay.address || "冰島地區"}</div>
-      <div class="acc-features">
-        🛏️ 規格：${stay.specs}
+      <div class="hotel-meta">
+        📍 <strong>${acc.location || acc.address}</strong>
       </div>
-      ${stay.notes ? `<div class="acc-note">💡 特色提醒：${stay.notes}</div>` : ""}
+      <div class="hotel-meta" style="margin-top:4px;">
+        🛏️ ${acc.specs}
+      </div>
+      <div class="hotel-features">
+        ${featuresHtml}
+      </div>
+      <div class="hotel-desc">
+        ${acc.desc || acc.notes}
+      </div>
     `;
 
     container.appendChild(card);
@@ -342,59 +361,217 @@ function renderAccommodations(days) {
 }
 
 /**
- * 6. 視圖切換邏輯 (View Switcher)
+ * 6. 冬季自駕與安全守則渲染 (Winter Driving & Safety View)
+ */
+function renderWinterGuide(data) {
+  const container = document.getElementById("guide-rules-container");
+  if (!container) return;
+
+  let html = "";
+
+  // 雙車配置與行李規則 (Slides 51, 58)
+  if (data.vehicleInfo) {
+    const v = data.vehicleInfo;
+    html += `
+      <div class="guide-vehicle-panel">
+        <div class="panel-header">
+          <h3>🚙 團隊自駕車輛配置（${v.teamSize} · 兩台四驅 SUV）</h3>
+          <p>RAV4 與 Land Cruiser 車型特性不同，滿載 7 人時煞車距離變長，行車務必保守輕柔。</p>
+        </div>
+        <div class="vehicles-grid">
+          ${v.vehicles.map(car => `
+            <div class="vehicle-card">
+              <div class="vehicle-model">${car.model}</div>
+              <div class="vehicle-role">${car.role}</div>
+              <div class="vehicle-features"><strong>特性：</strong>${car.features}</div>
+              <div class="vehicle-cautions"><strong>操作注意：</strong>${car.cautions}</div>
+            </div>
+          `).join("")}
+        </div>
+        <div class="luggage-rules-box">
+          <div class="box-title">🧳 行李空間與裝載黃金法則</div>
+          <ul>
+            ${v.luggageRules.map(r => `<li>${r}</li>`).join("")}
+          </ul>
+        </div>
+      </div>
+    `;
+  }
+
+  // 核心安全法則分類 (Slides 53–57, 59)
+  if (data.winterDrivingRules) {
+    html += `<div class="guide-grid-cards">`;
+    data.winterDrivingRules.forEach(rule => {
+      html += `
+        <div class="guide-card">
+          <h3>${rule.category}</h3>
+          <ul>
+            ${rule.items.map(item => `<li>${item}</li>`).join("")}
+          </ul>
+        </div>
+      `;
+    });
+    html += `</div>`;
+  }
+
+  container.innerHTML = html;
+}
+
+/**
+ * 7. 互動式行前準備打勾清單 (Interactive Checklist View)
+ */
+function renderChecklistView(checklists) {
+  const container = document.getElementById("checklist-container");
+  if (!container || !checklists) return;
+
+  const savedState = JSON.parse(localStorage.getItem("iceland_checklist") || "{}");
+
+  const buildSection = (title, items) => {
+    // 依 category 分組
+    const groups = {};
+    items.forEach(item => {
+      groups[item.cat] = groups[item.cat] || [];
+      groups[item.cat].push(item);
+    });
+
+    let sectionHtml = `<div class="checklist-section"><h3 class="checklist-section-title">${title}</h3>`;
+    for (const cat in groups) {
+      sectionHtml += `
+        <div class="checklist-category-card">
+          <div class="category-title">📂 ${cat}</div>
+          <div class="checklist-items-list">
+            ${groups[cat].map(item => {
+              const checked = !!savedState[item.id];
+              return `
+                <label class="check-item ${checked ? 'completed' : ''}" data-id="${item.id}">
+                  <input type="checkbox" ${checked ? 'checked' : ''} onchange="toggleChecklistItem('${item.id}', this.checked)">
+                  <span class="custom-checkmark"></span>
+                  <span class="check-text">${item.text}</span>
+                </label>`;
+            }).join("")}
+          </div>
+        </div>`;
+    }
+    sectionHtml += `</div>`;
+    return sectionHtml;
+  };
+
+  container.innerHTML = `
+    <div class="checklist-dashboard">
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span>🎒 行前打包與檢查進度</span>
+          <span id="checklist-progress-text">0 / 0</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div id="checklist-progress-fill" class="progress-bar-fill" style="width:0%"></div>
+        </div>
+      </div>
+      <button class="btn-reset-checklist" onclick="resetChecklist()" title="清除所有勾選狀態">重設打勾清單</button>
+    </div>
+    <div class="checklist-columns">
+      ${buildSection("📄 證件、保險、憑證與手機 App", checklists.documentsAndApps || [])}
+      ${buildSection("🧥 衣著裝備、隨身自炊與租車安全", checklists.clothingAndEquipment || [])}
+    </div>
+  `;
+
+  updateChecklistProgress();
+}
+
+function toggleChecklistItem(id, isChecked) {
+  const savedState = JSON.parse(localStorage.getItem("iceland_checklist") || "{}");
+  savedState[id] = isChecked;
+  localStorage.setItem("iceland_checklist", JSON.stringify(savedState));
+
+  const label = document.querySelector(`.check-item[data-id="${id}"]`);
+  if (label) {
+    label.classList.toggle("completed", isChecked);
+  }
+  updateChecklistProgress();
+}
+
+function updateChecklistProgress() {
+  const allCheckboxes = document.querySelectorAll('.check-item input[type="checkbox"]');
+  const checkedBoxes = document.querySelectorAll('.check-item input[type="checkbox"]:checked');
+  const total = allCheckboxes.length;
+  const done = checkedBoxes.length;
+
+  const textEl = document.getElementById("checklist-progress-text");
+  const fillEl = document.getElementById("checklist-progress-fill");
+
+  if (textEl && fillEl && total > 0) {
+    const pct = Math.round((done / total) * 100);
+    textEl.textContent = `已完成 ${done} / ${total} 項（${pct}%）`;
+    fillEl.style.width = `${pct}%`;
+  }
+}
+
+function resetChecklist() {
+  if (confirm("確定要重設所有打勾清單嗎？已勾選狀態將會被清除。")) {
+    localStorage.removeItem("iceland_checklist");
+    if (window.ICELAND_ITINERARY && window.ICELAND_ITINERARY.checklists) {
+      renderChecklistView(window.ICELAND_ITINERARY.checklists);
+    }
+  }
+}
+
+// 暴露全域給 HTML onchange/onclick
+window.toggleChecklistItem = toggleChecklistItem;
+window.resetChecklist = resetChecklist;
+
+/**
+ * 8. 視圖切換器 (View Switcher Tabs)
  */
 function initViewSwitcher() {
   const tabs = document.querySelectorAll(".view-tab");
   tabs.forEach((tab) => {
     tab.addEventListener("click", () => {
-      const viewKey = tab.dataset.view;
-      switchView(viewKey);
+      const viewName = tab.dataset.view;
+      switchView(viewName);
     });
   });
 }
 
-function switchView(viewKey) {
-  // 切換 Tab 狀態
-  document.querySelectorAll(".view-tab").forEach(tab => {
-    tab.classList.toggle("active", tab.dataset.view === viewKey);
+function switchView(viewName) {
+  // 更新 Tabs 樣式
+  document.querySelectorAll(".view-tab").forEach((tab) => {
+    tab.classList.toggle("active", tab.dataset.view === viewName);
   });
 
-  // 切換 View Section 顯示
-  document.querySelectorAll(".view-section").forEach(sec => {
-    sec.classList.remove("active");
+  // 更新 View Sections 顯示
+  document.querySelectorAll(".view-section").forEach((sec) => {
+    sec.classList.toggle("active", sec.id === `view-${viewName}`);
   });
 
-  const targetSection = document.getElementById(`view-${viewKey}`);
-  if (targetSection) {
-    targetSection.classList.add("active");
-  }
-
-  // 只有詳細視圖顯示吸頂日期條
+  // 控制吸頂日期快速切換列（只在詳細行程視圖顯示）
   const stickyNav = document.getElementById("sticky-nav-wrapper");
   if (stickyNav) {
-    stickyNav.style.display = (viewKey === "detailed") ? "block" : "none";
+    stickyNav.style.display = viewName === "detailed" ? "" : "none";
   }
 }
 
 /**
- * 7. 即時搜尋與篩選 (Search & Filter)
+ * 9. 即時搜尋與篩選 (Search & Filter)
  */
 function initSearchAndFilter(days) {
   const searchInput = document.getElementById("search-input");
-  const clearBtn = document.getElementById("search-clear");
+  const searchClear = document.getElementById("search-clear");
   if (!searchInput) return;
 
+  let debounceTimer = null;
   searchInput.addEventListener("input", (e) => {
-    const query = e.target.value.trim().toLowerCase();
-    if (clearBtn) clearBtn.classList.toggle("show", query.length > 0);
-    filterContent(query, days);
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      const q = e.target.value.trim().toLowerCase();
+      if (searchClear) searchClear.classList.toggle("show", q.length > 0);
+      filterContent(q, days);
+    }, 180);
   });
 
-  if (clearBtn) {
-    clearBtn.addEventListener("click", () => {
+  if (searchClear) {
+    searchClear.addEventListener("click", () => {
       searchInput.value = "";
-      clearBtn.classList.remove("show");
+      searchClear.classList.remove("show");
       filterContent("", days);
       searchInput.focus();
     });
@@ -411,7 +588,6 @@ function filterContent(query, days) {
     return;
   }
 
-  // 搜尋比對
   days.forEach((day, idx) => {
     const textBlob = [
       `Day ${day.dayNumber}`,
@@ -420,11 +596,12 @@ function filterContent(query, days) {
       day.region,
       day.morningSchedule,
       day.afternoonSchedule,
+      day.nightSchedule,
       day.accommodation.name,
       day.accommodation.specs,
       ...(day.tags || []),
       ...(day.tips || []),
-      ...(day.spots || []).map(s => s.name + " " + (s.desc || ""))
+      ...(day.spots || []).map(s => `${s.name} ${s.sub || ''} ${s.origin || ''} ${s.highlights || ''} ${s.tips || ''} ${s.desc || ''}`)
     ].join(" ").toLowerCase();
 
     const matches = textBlob.includes(query);
@@ -434,7 +611,7 @@ function filterContent(query, days) {
 }
 
 /**
- * 8. 滾動監聽吸頂日期高亮 (IntersectionObserver ScrollSpy)
+ * 10. 滾動監聽吸頂日期高亮 (IntersectionObserver ScrollSpy)
  */
 function initScrollSpy() {
   const dayCards = document.querySelectorAll(".day-card");
@@ -450,7 +627,6 @@ function initScrollSpy() {
           const isActive = p.dataset.day === dayNumber;
           p.classList.toggle("active", isActive);
           if (isActive) {
-            // 平滑捲動 nav
             navContainer.scrollTo({
               left: p.offsetLeft - navContainer.offsetWidth / 2 + p.offsetWidth / 2,
               behavior: "smooth"
@@ -467,7 +643,7 @@ function initScrollSpy() {
 }
 
 /**
- * 9. 全部展開 / 收合景點
+ * 11. 全部展開 / 全部收合
  */
 function initExpandCollapseAll() {
   const btn = document.getElementById("expand-collapse-btn");
@@ -483,7 +659,7 @@ function initExpandCollapseAll() {
 }
 
 /**
- * 10. 圖片燈箱 Modal (Lightbox Modal)
+ * 12. 圖片燈箱 Modal (Lightbox Modal)
  */
 function initLightboxModal() {
   const backdrop = document.getElementById("modal-backdrop");
@@ -522,67 +698,11 @@ function closeLightbox() {
   document.body.style.overflow = "";
 }
 
-function openMapLightbox(dayNum) {
-  if (window.IMG && window.IMG[dayNum]) {
-    openLightbox(window.IMG[dayNum], `Day ${dayNum} 自駕行車路線地圖`);
-  }
-}
-
-function openSpotLightbox(spotIdx, spotName) {
-  if (window.SP && window.SP[spotIdx]) {
-    openLightbox(window.SP[spotIdx], spotName);
-  }
-}
-
-// 暴露給全域 HTML onclick 使用
 window.openLightbox = openLightbox;
-window.openMapLightbox = openMapLightbox;
-window.openSpotLightbox = openSpotLightbox;
+window.closeLightbox = closeLightbox;
 
 /**
- * 11. 手機極速最佳化：Base64 圖片懶加載 (Lazy Load Base64)
- * 只有滑入可視範圍時才塞入 Base64 進行圖片解碼，徹底解決手機開啟時卡死問題
- */
-function initLazyBase64Images() {
-  const lazyImages = document.querySelectorAll("img.lazy-base64");
-  if (!lazyImages.length) return;
-
-  if ("IntersectionObserver" in window) {
-    const imgObserver = new IntersectionObserver((entries, observer) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          const img = entry.target;
-          const dayNum = img.dataset.day;
-          const spIdx = img.dataset.spIdx;
-
-          if (dayNum && window.IMG && window.IMG[dayNum]) {
-            img.src = window.IMG[dayNum];
-          } else if (spIdx !== undefined && window.SP && window.SP[spIdx]) {
-            img.src = window.SP[spIdx];
-          }
-          img.classList.remove("lazy-base64");
-          observer.unobserve(img);
-        }
-      });
-    }, { rootMargin: "150px 0px" });
-
-    lazyImages.forEach(img => imgObserver.observe(img));
-  } else {
-    // 降級兼容
-    lazyImages.forEach((img) => {
-      const dayNum = img.dataset.day;
-      const spIdx = img.dataset.spIdx;
-      if (dayNum && window.IMG && window.IMG[dayNum]) {
-        img.src = window.IMG[dayNum];
-      } else if (spIdx !== undefined && window.SP && window.SP[spIdx]) {
-        img.src = window.SP[spIdx];
-      }
-    });
-  }
-}
-
-/**
- * 12. 回頂部按鈕
+ * 13. 回頂部按鈕
  */
 function initBackToTop() {
   const btn = document.getElementById("back-to-top-btn");
@@ -598,21 +718,10 @@ function initBackToTop() {
 }
 
 /**
- * 13. 列印優化協助
+ * 14. 列印最佳化
  */
 function initPrintHelper() {
   window.addEventListener("beforeprint", () => {
-    // 列印前展開所有摺疊
     document.querySelectorAll(".spot-accordion").forEach(d => d.open = true);
-    // 確保所有地圖在列印時被載入
-    document.querySelectorAll("img.lazy-base64").forEach((img) => {
-      const dayNum = img.dataset.day;
-      const spIdx = img.dataset.spIdx;
-      if (dayNum && window.IMG && window.IMG[dayNum]) {
-        img.src = window.IMG[dayNum];
-      } else if (spIdx !== undefined && window.SP && window.SP[spIdx]) {
-        img.src = window.SP[spIdx];
-      }
-    });
   });
 }
